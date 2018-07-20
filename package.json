@@ -1,0 +1,33 @@
+{
+  "name": "node-blog-api",
+  "version": "1.0.0",
+  "description": "A simple node blog api",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "cross-env NODE_ENV=test mocha server/**/*test.js --timeout=4000",
+    "test-watch": "cross-env NODE_ENV=test nodemon --exec mocha server/**/*test.js --timeout=4000"
+  },
+  "engines": {
+    "node": "10.1.0"
+  },
+  "author": "Sam Okasha",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.10",
+    "mongodb": "^3.1.1",
+    "mongoose": "^5.2.3",
+    "validator": "^10.4.0"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "expect": "^23.4.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.2",
+    "supertest": "^3.1.0"
+  }
+}
