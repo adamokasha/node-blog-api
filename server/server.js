@@ -2,6 +2,7 @@ require('./config/config');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const {ObjectID} = require('mongodb');
 const _ = require('lodash');
 
@@ -15,6 +16,7 @@ const {requireAuthAsync} = require('./middleware/requireAuth');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(bodyParser.json());
 
 app.get('/posts', async (req, res) => {
