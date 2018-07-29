@@ -16,7 +16,11 @@ const {requireAuthAsync} = require('./middleware/requireAuth');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+const corsOptions = {
+  exposedHeaders: 'x-auth'
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 app.get('/posts', async (req, res) => {
