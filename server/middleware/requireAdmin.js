@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const {User} = require('./../models/user');
 
-const requireAdmin = (req, res, next) => {
+const requireAdmin = async (req, res, next) => {
   const token = req.header('x-auth');
   let decoded;
 
@@ -10,8 +11,10 @@ const requireAdmin = (req, res, next) => {
       throw new Error();
     }
   } catch (e) {
-    return res.status(401).send();
+    return res.status(401).send({error: 'You are not authorized to perform this request.'});
   }
+  const user = await User.findByToken(token);
+  req.user = user;
 
   next();
 };

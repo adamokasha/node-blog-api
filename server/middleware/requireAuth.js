@@ -23,7 +23,7 @@ const requireAuthAsync = async (req, res, next) => {
     req.token = token;
     next();
   } catch (e) {
-    return res.status(401).send();
+    return res.status(401).send(e);
   }
 }
 

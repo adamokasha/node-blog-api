@@ -4,29 +4,42 @@ const PostSchema = mongoose.Schema({
   title: {
     type: String,
     required: true,
-    minlength: 1,
+    minlength: 4,
     maxlength: 60,
     trim: true
   },
   author: {
-    type: String,
-    default: 'Admin'
+    type: String
   },
   createdAt: {
-    type: Date,
-    default: Date.now()
+    type: Number,
+    default: Date.now
   },
   category: {
     type: String,
+    minlength: 4,
+    maxlength: 16,
     default: 'General'
   },
   body: {
     type: String,
     required: true,
-    minlength: 10,
+    minlength: 24,
+    maxlength: 13468,
     trim: true
   },
-  comments: [{comment: String, date: Date, createdBy: String}]
+  comments: [{
+    comment: {
+      type: String,
+      minlength: 8,
+      maxlength: 128
+    },
+    date: {
+      type: Number,
+      default: Date.now
+    }, 
+    createdBy: String
+  }]
 });
 
 const Post = mongoose.model('Post', PostSchema);

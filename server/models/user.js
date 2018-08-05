@@ -3,6 +3,7 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const UserSchema = mongoose.Schema({
   email: {
@@ -18,14 +19,14 @@ const UserSchema = mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 6
+    minlength: 6,
   },
   displayName: {
     type: String,
     required: true,
     unique: true,
     minlength: 6,
-    maxlength: 16
+    maxlength: 12
   },
   role: {
     type: String,
@@ -37,12 +38,15 @@ const UserSchema = mongoose.Schema({
   }
 });
 
+// Apply uniqueValidator
+UserSchema.plugin(uniqueValidator, {message: 'The {PATH} {VALUE} is already in use. Please use another.'});
+
 // Override toJSON method so only certain values are sent back
 UserSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
 
-  return _.pick(userObject, ['_id', 'email', 'displayName']);
+  return _.pick(userObject, ['_id', 'email', 'displayName', 'role']);
 };
 
 UserSchema.methods.generateAuthToken = function () {
@@ -105,7 +109,7 @@ UserSchema.methods.removeToken = function (token) {
   return user.update({ $unset: {token} });
 }
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre('save', function (next, done) {
   const user = this;
 
   // Check first to see if password was modified, if not, no need to hash password again

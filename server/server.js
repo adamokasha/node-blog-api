@@ -27,7 +27,7 @@ app.get('/posts', async (req, res) => {
   try {
     const posts = await Post.find();
     res.status(200).send({posts});
-  } catch {
+  } catch (e) {
     res.status(400).send();
   }
 });
@@ -38,13 +38,14 @@ app.post('/posts', requireAdmin, async (req, res) => {
     const post = new Post({
       title: body.title,
       category: body.category,
+      author: req.user.displayName,
       body: body.body
     });
 
     await post.save();
-    res.status(200).send(post);
+    res.status(200).send({post});
   } catch (e) {
-    res.status(400).send();
+    res.status(400).send({error: 'Please check post field requirements'});
   }
 });
 
@@ -56,7 +57,7 @@ app.patch('/posts/:id', requireAdmin, async (req, res) => {
     const post = await Post.findOneAndUpdate(id, {$set: body}, {new: true});
     res.status(200).send({post});
   } catch (e) {
-    res.status(400).send();
+    res.status(400).send({error: 'Could not update post.'});
   }
 });
 
@@ -70,7 +71,7 @@ app.delete('/posts/:id', requireAdmin, async (req, res) => {
     const post = await Post.findByIdAndRemove(id);
     
     if (!post) {
-      return res.status(400).send();
+      return res.status(400).send({error: 'Could not delete post.'});
     }
 
     res.status(200).send();
@@ -84,16 +85,17 @@ app.post('/posts/:id/comments', requireAuthAsync, async (req, res) => {
   try {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) {
-      return res.status(400).send();
+      throw new Error();
     }
 
     const body = _.pick(req.body, ['comment']);
     body.createdBy = req.user.displayName;
 
     const post = await Post.findByIdAndUpdate(id, { $push: {comments: body}}, {new: true});
-    res.status(200).send({post});
+    const comment = _.last(post.comments) 
+    res.status(200).send(comment);
   } catch (e) {
-    res.status(400).send();
+    res.status(400).send({error: 'Unable to post comment.'});
   }
 });
 
@@ -116,7 +118,7 @@ app.post('/users/login', async (req, res) => {
     const token = await user.generateAuthToken();
     res.header('x-auth', token).send(user);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(401).send({error: 'The email or password you entered is incorrect. Please try again.'});
   }
 });
 
