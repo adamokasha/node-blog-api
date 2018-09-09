@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server/server.js",
     "test": "cross-env NODE_ENV=test mocha server/**/*test.js --timeout=4000",
-    "test-watch": "cross-env NODE_ENV=test nodemon --exec mocha server/**/*test.js --timeout=4000"
+    "test-watch": "cross-env NODE_ENV=test nodemon --exec mocha server/**/*test.js --timeout=4000",
+    "test-server": "cross-env NODE_ENV=test npm start"
   },
   "engines": {
     "node": "10.1.0"
