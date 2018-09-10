@@ -34,12 +34,14 @@ app.get('/posts', async (req, res) => {
 
 app.post('/posts', requireAdmin, async (req, res) => {
   try {
-    const body = _.pick(req.body, ['title', 'category', 'body']);
+    const body = _.pick(req.body, ['title', 'category', 'body', 'mainImage', 'thumbnail']);
     const post = new Post({
       title: body.title,
       category: body.category,
       author: req.user.displayName,
-      body: body.body
+      body: body.body,
+      mainImage: body.mainImage || '',
+      thumbnail: body.thumbnail || ''
     });
 
     await post.save();
@@ -52,7 +54,7 @@ app.post('/posts', requireAdmin, async (req, res) => {
 app.patch('/posts/:id', requireAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    const body = _.pick(req.body, ['title', 'category', 'body']);
+    const body = _.pick(req.body, ['title', 'category', 'body', 'mainImage', 'thumbnail']);
 
     const post = await Post.findOneAndUpdate(id, {$set: body}, {new: true});
     res.status(200).send({post});

@@ -28,6 +28,12 @@ const PostSchema = mongoose.Schema({
     maxlength: 13468,
     trim: true
   },
+  mainImage: {
+    type: String,
+  },
+  thumbnail: {
+    type: String
+  },
   comments: [{
     comment: {
       type: String,
