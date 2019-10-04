@@ -3,18 +3,18 @@ require('./config/config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const {ObjectID} = require('mongodb');
+const { ObjectID } = require('mongodb');
 const _ = require('lodash');
 
 const mongoose = require('./db/mongoose');
-const {Post} = require('./models/post');
-const {User} = require('./models/user');
-const {requireAdmin} = require('./middleware/requireAdmin');
-const {requireAuthAsync} = require('./middleware/requireAuth');
+const { Post } = require('./models/post');
+const { User } = require('./models/user');
+const { requireAdmin } = require('./middleware/requireAdmin');
+const { requireAuthAsync } = require('./middleware/requireAuth');
 
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 const corsOptions = {
   exposedHeaders: 'x-auth'
@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.get('/posts', async (req, res) => {
   try {
     const posts = await Post.find();
-    res.status(200).send({posts});
+    res.status(200).send({ posts });
   } catch (e) {
     res.status(400).send();
   }
@@ -45,9 +45,9 @@ app.post('/posts', requireAdmin, async (req, res) => {
     });
 
     await post.save();
-    res.status(200).send({post});
+    res.status(200).send({ post });
   } catch (e) {
-    res.status(400).send({error: 'Please check post field requirements'});
+    res.status(400).send({ error: 'Please check post field requirements' });
   }
 });
 
@@ -56,10 +56,10 @@ app.patch('/posts/:id', requireAdmin, async (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['title', 'category', 'body', 'mainImage', 'thumbnail']);
 
-    const post = await Post.findOneAndUpdate(id, {$set: body}, {new: true});
-    res.status(200).send({post});
+    const post = await Post.findOneAndUpdate(id, { $set: body }, { new: true });
+    res.status(200).send({ post });
   } catch (e) {
-    res.status(400).send({error: 'Could not update post.'});
+    res.status(400).send({ error: 'Could not update post.' });
   }
 });
 
@@ -71,9 +71,9 @@ app.delete('/posts/:id', requireAdmin, async (req, res) => {
     }
 
     const post = await Post.findByIdAndRemove(id);
-    
+
     if (!post) {
-      return res.status(400).send({error: 'Could not delete post.'});
+      return res.status(400).send({ error: 'Could not delete post.' });
     }
 
     res.status(200).send();
@@ -93,11 +93,11 @@ app.post('/posts/:id/comments', requireAuthAsync, async (req, res) => {
     const body = _.pick(req.body, ['comment']);
     body.createdBy = req.user.displayName;
 
-    const post = await Post.findByIdAndUpdate(id, { $push: {comments: body}}, {new: true});
-    const comment = _.last(post.comments) 
+    const post = await Post.findByIdAndUpdate(id, { $push: { comments: body } }, { new: true });
+    const comment = _.last(post.comments)
     res.status(200).send(comment);
   } catch (e) {
-    res.status(400).send({error: 'Unable to post comment.'});
+    res.status(400).send({ error: 'Unable to post comment.' });
   }
 });
 
@@ -120,7 +120,7 @@ app.post('/users/login', async (req, res) => {
     const token = await user.generateAuthToken();
     res.header('x-auth', token).send(user);
   } catch (e) {
-    res.status(401).send({error: 'The email or password you entered is incorrect. Please try again.'});
+    res.status(401).send({ error: 'The email or password you entered is incorrect. Please try again.' });
   }
 });
 
@@ -137,4 +137,4 @@ app.listen(port, () => {
   console.log(`Server is up on port ${port}`)
 });
 
-module.exports = {app};
+module.exports = { app };

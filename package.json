@@ -4,6 +4,8 @@
   "description": "A simple node blog api",
   "main": "index.js",
   "scripts": {
+    "start:dockerdev": "cross-env NODE_ENV=dockerdev nodemon server/server.js",
+    "start:dev": "cross-env NODE_ENV=development node server/server.js",
     "start": "node server/server.js",
     "test": "cross-env NODE_ENV=test mocha server/**/*test.js --timeout=4000",
     "test-watch": "cross-env NODE_ENV=test nodemon --exec mocha server/**/*test.js --timeout=4000",
