@@ -14,16 +14,17 @@ const { requireAuthAsync } = require('./middleware/requireAuth');
 
 
 const app = express();
+const router = express.Router();
 const port = process.env.PORT || 4000;
 
 const corsOptions = {
   exposedHeaders: 'x-auth'
 };
 
-app.use(cors(corsOptions));
-app.use(bodyParser.json());
+router.use(cors(corsOptions));
+router.use(bodyParser.json());
 
-app.get('/posts', async (req, res) => {
+router.get('/posts', async (req, res) => {
   try {
     const posts = await Post.find();
     res.status(200).send({ posts });
@@ -32,7 +33,7 @@ app.get('/posts', async (req, res) => {
   }
 });
 
-app.post('/posts', requireAdmin, async (req, res) => {
+router.post('/posts', requireAdmin, async (req, res) => {
   try {
     const body = _.pick(req.body, ['title', 'category', 'body', 'mainImage', 'thumbnail']);
     const post = new Post({
@@ -51,7 +52,7 @@ app.post('/posts', requireAdmin, async (req, res) => {
   }
 });
 
-app.patch('/posts/:id', requireAdmin, async (req, res) => {
+router.patch('/posts/:id', requireAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     const body = _.pick(req.body, ['title', 'category', 'body', 'mainImage', 'thumbnail']);
@@ -63,7 +64,7 @@ app.patch('/posts/:id', requireAdmin, async (req, res) => {
   }
 });
 
-app.delete('/posts/:id', requireAdmin, async (req, res) => {
+router.delete('/posts/:id', requireAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) {
@@ -83,7 +84,7 @@ app.delete('/posts/:id', requireAdmin, async (req, res) => {
 
 });
 
-app.post('/posts/:id/comments', requireAuthAsync, async (req, res) => {
+router.post('/posts/:id/comments', requireAuthAsync, async (req, res) => {
   try {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) {
@@ -101,7 +102,7 @@ app.post('/posts/:id/comments', requireAuthAsync, async (req, res) => {
   }
 });
 
-app.post('/users', async (req, res) => {
+router.post('/users', async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', 'password', 'displayName']);
     const user = new User(body);
@@ -113,7 +114,7 @@ app.post('/users', async (req, res) => {
   }
 });
 
-app.post('/users/login', async (req, res) => {
+router.post('/users/login', async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', 'password']);
     const user = await User.findByCredentials(body.email, body.password);
@@ -124,7 +125,7 @@ app.post('/users/login', async (req, res) => {
   }
 });
 
-app.delete('/users/me/token', requireAuthAsync, async (req, res) => {
+router.delete('/users/me/token', requireAuthAsync, async (req, res) => {
   try {
     await req.user.removeToken(req.token);
     res.status(200).send();
@@ -132,6 +133,8 @@ app.delete('/users/me/token', requireAuthAsync, async (req, res) => {
     res.status(400).send(e);
   }
 });
+
+app.use('/api', router);
 
 app.listen(port, () => {
   console.log(`Server is up on port ${port}`)
